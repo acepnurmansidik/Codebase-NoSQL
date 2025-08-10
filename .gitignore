@@ -1,0 +1,15 @@
+/node_modules
+/logger
+.env
+/uploads/csv/
+/uploads/images/
+/uploads/doc/
+swagger-output.json
+serviceAccountKey.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# app build result
+BE_RentHouse
