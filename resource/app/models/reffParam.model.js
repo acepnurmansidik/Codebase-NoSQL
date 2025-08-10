@@ -37,7 +37,7 @@ const ReffparamModel = Schema(
     timestamps: true,
     versionKey: false,
     new: true,
-    collection: "reff_parameter",
+    collection: "reff_parameters",
   },
 );
 

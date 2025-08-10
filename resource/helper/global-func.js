@@ -31,7 +31,7 @@ const transporter = nodemailer.createTransport({
 globalService.sendEmail = async ({ template, payload, receive, subject }) => {
   // Get template email from html file
   const tempFile = fs.readFileSync(
-    `resource/app/templates/html/${template}.html`,
+    `resource/templates/${template}.html`,
     "utf-8",
   );
 
