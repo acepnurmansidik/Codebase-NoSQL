@@ -149,7 +149,7 @@ globalService.uploadFiles = async (files, source_name) => {
  */
 globalService.setupLogger = (fileName, log) => {
   const loggerDir = path.join(__dirname, "../../logger");
-  const dateFileName = `${fileName}.txt`;
+  const dateFileName = `${fileName.split(" ")[0]}.txt`;
   const filePath = path.join(loggerDir, dateFileName);
 
   try {
