@@ -40,12 +40,16 @@ controller.Register = async (req, res, next) => {
     const auth = new AuthUser({ ...payload });
     await auth.save({ session });
 
-    const user = new UserSchema({
-      auth_id: auth._id,
-      device_token: token,
-      name: auth.username,
-    });
-    await user.save({ session });
+    await UserSchema.create(
+      [
+        {
+          auth_id: auth._id,
+          device_token: token,
+          name: auth.username,
+        },
+      ],
+      { session },
+    );
 
     // Jika semua operasi berhasil, commit transaksi
     await session.commitTransaction();
@@ -92,7 +96,7 @@ controller.Login = async (req, res, next) => {
 
     const users = await crudServices.findOne(UserSchema, {
       auth_id: isAvailable.data._id,
-      selectField: "-auth_id",
+      selectField: "-auth_id -device_token -createdAt",
     });
 
     const token = globalService.generateJwtToken({
@@ -103,7 +107,7 @@ controller.Login = async (req, res, next) => {
     res.status(200).json({
       status: true,
       message: "Login success!",
-      data: { ...users.data, token },
+      data: { ...users.data._doc, token },
     });
   } catch (err) {
     next(err);

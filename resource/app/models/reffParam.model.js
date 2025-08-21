@@ -9,18 +9,16 @@ const ReffparamModel = Schema(
     value: {
       type: String,
       minlength: [1, "Panjang minimal 3 karakter"],
-      maxLength: [20, "Panjang maksimal 20 karakter"],
       required: [true, "Value harus diisi"],
       unique: true,
     },
     type: {
       type: String,
-      minlength: [3, "Panjang password minimal 3 karakter"],
+      minlength: [3, "Panjang type minimal 3 karakter"],
       required: [true, "password harus diisi"],
     },
     description: {
       type: String,
-      minlength: [3, "Panjang password minimal 3 karakter"],
       required: [true, "password harus diisi"],
     },
     is_delete: {
@@ -30,6 +28,11 @@ const ReffparamModel = Schema(
     icon_id: {
       type: mongoose.Types.ObjectId,
       ref: "Image",
+      default: null,
+    },
+    parent_id: {
+      type: mongoose.Types.ObjectId,
+      ref: "ReffParameter",
       default: null,
     },
   },

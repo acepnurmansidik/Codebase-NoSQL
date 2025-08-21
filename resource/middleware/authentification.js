@@ -1,4 +1,5 @@
 const AuthUser = require("../app/models/auth");
+const UserModel = require("../app/models/users.model");
 const globalService = require("../helper/global-func");
 const { UnauthenticatedError } = require("../utils/errors");
 
@@ -19,6 +20,7 @@ const AuthorizeUserLogin = async (req, res, next) => {
 
     // check email is register on database
     const verifyData = await AuthUser.findOne({ email: dataValid.email });
+    const userLogin = await UserModel.findOne({ auth_id: verifyData._id });
 
     // send error not found, if data not register
     if (!verifyData) throw new NotFound("Data not register!");
@@ -28,7 +30,12 @@ const AuthorizeUserLogin = async (req, res, next) => {
     delete dataValid.exp;
     delete dataValid.jti;
 
-    req.login = { ...dataValid };
+    req.login = {
+      ...dataValid,
+      auth_id: verifyData._id,
+      user_id: userLogin._id,
+      device_token: userLogin.device_token,
+    };
     // next to controller
     next();
   } catch (err) {

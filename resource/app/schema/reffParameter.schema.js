@@ -3,7 +3,8 @@ const RefParameterSchema = {
     value: "income",
     type: "cashflow_type",
     description: "pemasukan anda",
-    icon_id: "669122f5e485b234f586e895",
+    icon_id: null,
+    parent_id: null,
   },
 };
 

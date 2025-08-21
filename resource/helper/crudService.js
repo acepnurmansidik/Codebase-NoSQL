@@ -33,8 +33,7 @@ crudServices.findOne = async (model, { query, populateField, selectField }) => {
     const result = await model
       .findOne({ ...query, is_delete: { $ne: true } })
       .populate(populateField)
-      .select(`${selectField ?? ""} -__v -updatedAt -is_delete`)
-      .lean();
+      .select(`${selectField ?? ""} -__v -updatedAt -is_delete`);
 
     return {
       success: true,
@@ -56,8 +55,7 @@ crudServices.findAll = async (
       .find({ ...query, is_delete: { $ne: true } }, {})
       .populate(populateField)
       .select(`${selectField} -updatedAt -is_delete`)
-      .sort({ _id: -1 })
-      .lean();
+      .sort({ _id: -1 });
 
     return {
       success: true,
@@ -81,8 +79,7 @@ crudServices.findAllPagination = async (
       .select(`${selectField} -updatedAt -is_delete`)
       .sort({ _id: -1 })
       .skip(skip)
-      .limit(limit)
-      .lean();
+      .limit(limit);
 
     return {
       success: true,
@@ -174,9 +171,9 @@ crudServices.delete = async (model, { id, data }) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const result = await model.findByIdAndUpdate(
-      id,
-      { is_delete: true, deleted_by: data?.deleted_by },
+    const result = await model.findOneAndUpdate(
+      { _id: id, is_delete: false },
+      { is_delete: true, ...data },
       {
         new: true,
         runValidators: true,
@@ -198,7 +195,7 @@ crudServices.delete = async (model, { id, data }) => {
     await session.commitTransaction();
     return {
       success: true,
-      message: "Data updated successfully!",
+      message: "Data deleted successfully!",
       data: result,
     };
   } catch (error) {

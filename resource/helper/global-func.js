@@ -75,10 +75,14 @@ globalService.generateJwtToken = ({ ...payload }) => {
 globalService.verifyJwtToken = async (token, next) => {
   try {
     // verify token
-    const decode = await jwtToken.verify(token, secretKey, (err, decode) => {
-      if (err) throw new UnauthenticatedError(err.message);
-      if (!err) return decode;
-    });
+    const decode = await jwtToken.verify(
+      token,
+      jwt.secretKey,
+      (err, decode) => {
+        if (err) throw new UnauthenticatedError(err.message);
+        if (!err) return decode;
+      },
+    );
     return decode;
   } catch (err) {
     next(err);

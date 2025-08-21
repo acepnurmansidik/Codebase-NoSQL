@@ -5,11 +5,11 @@ const BadRequest = require("../../utils/errors/bad-request");
 const controller = {};
 
 controller.index = async (req, res, next) => {
-  const arrFilter = [];
   const query = {};
   const { search, type, page, limit = 10 } = req.query;
   const skip = (page - 1) * limit;
   if (query.length) query.type = type;
+  const arrFilter = [];
   if (search) {
     arrFilter.push({ value: { $regex: search, $options: "i" } });
   }
@@ -20,17 +20,12 @@ controller.index = async (req, res, next) => {
   ];
   try {
     /*
-    #swagger.security = [{
-      "bearerAuth": []
-    }]
-  */
-    /*
     #swagger.tags = ['REF PARAMETER']
     #swagger.summary = 'ref parameter'
     #swagger.description = 'untuk referensi group'
-    #swagger.parameters['type'] = { default: 'category', description: 'Search by type' }
-    #swagger.parameters['limit'] = { default: 10, description: 'Search by type' }
-    #swagger.parameters['page'] = { default: 1, description: 'Search by type' }
+    #swagger.parameters['search'] = { default: '', description: 'search by value' }
+    #swagger.parameters['limit'] = { default: 10, description: 'limit' }
+    #swagger.parameters['page'] = { default: 1, description: 'page' }
   */
     const page_size = await ReffparamModel.countDocuments(query);
     const result = await crudServices.findAllPagination(ReffparamModel, {
@@ -48,11 +43,6 @@ controller.index = async (req, res, next) => {
 
 controller.create = async (req, res, next) => {
   try {
-    /*
-    #swagger.security = [{
-      "bearerAuth": []
-    }]
-  */
     /*
     #swagger.tags = ['REF PARAMETER']
     #swagger.summary = 'ref parameter'
