@@ -59,7 +59,7 @@ globalService.sendEmail = async ({ template, payload, receive, subject }) => {
 globalService.generateJwtToken = ({ ...payload }) => {
   const jwtSignOptions = {
     algorithm: jwt.tokenAlgorithm,
-    expiresIn: jwt.tokenExp,
+    // expiresIn: jwt.tokenExp,
     jwtid: jwt.jwtId,
   };
 
@@ -79,12 +79,13 @@ globalService.verifyJwtToken = async (token, next) => {
       token,
       jwt.secretKey,
       (err, decode) => {
-        if (err) throw new UnauthenticatedError(err.message);
+        if (err) throw new Error(err.message);
         if (!err) return decode;
       },
     );
     return decode;
   } catch (err) {
+    console.log(err, "ERRROR====>");
     next(err);
   }
 };
@@ -96,14 +97,13 @@ globalService.verifyJwtToken = async (token, next) => {
  * | if you wanna privacy data exchange
  * |
  */
-globalService.generateUniqueCode = ({ customeCode, lengthCode = 10 }) => {
+globalService.generateUniqueCode = ({ customeCode = "", lengthCode = 10 }) => {
   const tokenCode = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-  const token = [];
+  let token = "";
   for (let i = 0; i < lengthCode; i++) {
-    token.push(tokenCode[~~(Math.random() * tokenCode.length + 1)]);
+    token += tokenCode.charAt(Math.floor(Math.random() * tokenCode.length));
   }
-
-  return customeCode ?? "" + token.join(""); // Totalnya 14 digit
+  return customeCode + "-" + token + Date.now();
 };
 
 /**

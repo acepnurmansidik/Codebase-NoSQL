@@ -14,6 +14,12 @@ const SysUserModel = Schema(
       minlength: [3, "Panjang name minimal 3 karakter"],
       required: [true, "Name can't be empty"],
     },
+    role_id: {
+      type: mongoose.Types.ObjectId,
+      ref: "ReffParameter",
+      require: true,
+      unique: true,
+    },
     device_token: {
       type: String,
       required: [false, "Device token can't be empty"],

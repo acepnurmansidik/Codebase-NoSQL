@@ -6,6 +6,7 @@ const { BadRequestError, NotFoundError } = require("../../utils/errors");
 const globalService = require("../../helper/global-func");
 const { default: mongoose } = require("mongoose");
 const crudServices = require("../../helper/crudService");
+const ReffParameter = require("../models/reffParam.model");
 
 const controller = {};
 
@@ -26,9 +27,17 @@ controller.Register = async (req, res, next) => {
     const { token, ...payload } = req.body;
 
     // komparasikan dengna yang ada di database
-    const isAvailable = await AuthUser.findOne({ email: payload.email });
+    const [isAvailable, defaultRole] = await Promise.all([
+      AuthUser.findOne({ email: payload.email }).lean(),
+      ReffParameter.findOne({ type: "role", value: "members" }).lean(),
+    ]);
+
     if (isAvailable) {
       throw new BadRequestError("Email has been register!");
+    }
+
+    if (!defaultRole) {
+      throw new BadRequestError("Role not found!");
     }
 
     // lakukan enkripsi pada password
@@ -46,6 +55,7 @@ controller.Register = async (req, res, next) => {
           auth_id: auth._id,
           device_token: token,
           name: auth.username,
+          role_id: defaultRole._id,
         },
       ],
       { session },
@@ -94,10 +104,18 @@ controller.Login = async (req, res, next) => {
       throw new BadRequestError("Please check your password!");
     }
 
+    const populateField = [
+      { path: "role_id", model: "ReffParameter", select: "_id value" },
+    ];
+
     const users = await crudServices.findOne(UserSchema, {
       auth_id: isAvailable.data._id,
       selectField: "-auth_id -device_token -createdAt",
+      populateField,
     });
+
+    users.data._doc.role_name = users.data.role_id.value;
+    delete users.data._doc.role_id;
 
     const token = globalService.generateJwtToken({
       email,

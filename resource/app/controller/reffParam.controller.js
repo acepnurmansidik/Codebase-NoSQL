@@ -57,11 +57,16 @@ controller.create = async (req, res, next) => {
     payload.type = payload.type.toLowerCase().replace(" ", "_");
     payload.value = payload.value.toLowerCase();
 
-    const isExist = await crudServices.findOne(ReffparamModel, {
-      query: { value: payload.value },
-    });
+    const [lastData, isExist] = await Promise.all([
+      ReffparamModel.findOne({ type: payload.type }).sort({ key: -1 }).lean(),
+      crudServices.findOne(ReffparamModel, {
+        query: { value: payload.value },
+      }),
+    ]);
 
     if (isExist.data) throw new BadRequest(`duplicate data ${payload.value}`);
+
+    payload.key = lastData ? lastData.key + 1 : 1;
 
     const result = await crudServices.create(ReffparamModel, {
       data: payload,
