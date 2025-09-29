@@ -7,37 +7,29 @@ const endpointsFiles = ["./app.js"]; // Sesuaikan dengan file-file yang berisi r
 
 const doc = {
   info: {
-    version: "1.0.0", // by default: '1.0.0'
-    title: "REST API", // by default: 'REST API'
-    description: "", // by default: ''
+    version: "1.0.0",
+    title: "REST API",
+    description: "",
   },
-  host: `localhost:${server.portAccess}`, // by default: 'localhost:3022'
-  basePath: "/", // by default: '/'
-  schemes: ["http", "https"], // by default: ['http']
-  consumes: [], // by default: ['application/json']
-  produces: [], // by default: ['application/json']
+  host: `localhost:${server.portAccess}`,
+  basePath: "/",
+  schemes: ["http", "https"],
+  consumes: [],
+  produces: [],
   tags: [],
   definitions: {
     ...GlobalSchema,
     NotFound: {
       code: 404,
-      status: false,
+      success: false,
       message: "Data not found!",
       data: "",
     },
     QueryIdSchema: {
       id: "",
     },
-  }, // by default: empty object (Swagger 2.0)
-  components: {}, // by default: empty object (OpenAPI 3.x)
-  // securityDefinitions: {
-  //   apiKeyAuth: {
-  //     type: "apiKey",
-  //     in: "header", // can be 'header', 'query' or 'cookie'
-  //     name: "X-API-KEY", // name of the header, query parameter or cookie
-  //     description: "Some description...",
-  //   },
-  // },
+  },
+  components: {},
   securityDefinitions: {
     bearerAuth: {
       type: "apiKey",
@@ -47,7 +39,14 @@ const doc = {
       bearerFormat: "JWT",
       description: "Please insert JWT format!",
     },
+    apiKeyAuth: {
+      type: "apiKey",
+      in: "header",
+      name: "x-api-key",
+      description: "API key header",
+    },
   },
+  security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
 };
 
 swaggerAutogen(outputFile, endpointsFiles, doc);
