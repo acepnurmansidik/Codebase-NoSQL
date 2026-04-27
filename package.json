@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prod": "nodemon --max-old-space-size=4096 ./bin/www",
-    "dev": "nodemon --max-old-space-size=4096 ./bin/www ./swagger.js",
+    "prod": "NODE_ENV=production nodemon --max-old-space-size=4096 ./bin/www",
+    "dev": "NODE_ENV=development nodemon --max-old-space-size=4096 ./bin/www ./swagger.js",
     "swag": "node ./swagger.js"
   },
   "dependencies": {
