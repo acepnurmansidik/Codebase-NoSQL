@@ -23,7 +23,6 @@ const ImageModel = Schema(
   {
     timestamps: true,
     versionKey: false,
-    new: true,
     collection: "images",
   },
 );

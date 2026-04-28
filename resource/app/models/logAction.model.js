@@ -21,7 +21,7 @@ const LogActionModel = Schema(
       type: Schema.Types.Mixed,
     },
   },
-  { timestamps: true, versionKey: false, new: true, collection: "log_actions" },
+  { timestamps: true, versionKey: false, collection: "log_actions" },
 );
 
 module.exports = model("LogAction", LogActionModel);

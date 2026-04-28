@@ -1,37 +1,26 @@
 const mongoose = require("mongoose");
 const { model, Schema } = mongoose;
 
-const ReffparamModel = Schema(
+const ReffparamModel = new Schema(
   {
-    key: {
-      type: Number,
-    },
+    key: { type: Number },
     value: {
       type: String,
-      minlength: [1, "Panjang minimal 3 karakter"],
-      required: [true, "Value harus diisi"],
+      required: [true, "Value is required"],
       unique: true,
     },
     type: {
       type: String,
-      minlength: [3, "Panjang type minimal 3 karakter"],
-      required: [true, "password harus diisi"],
+      required: [true, "Type is required"], // Sebelumnya "password harus diisi"
     },
     description: {
       type: String,
-      required: [true, "password harus diisi"],
+      required: [true, "Description is required"], // Sebelumnya "password harus diisi"
     },
-    is_delete: {
-      type: Boolean,
-      default: false,
-    },
-    icon_id: {
-      type: mongoose.Types.ObjectId,
-      ref: "Image",
-      default: null,
-    },
+    is_delete: { type: Boolean, default: false },
+    icon_id: { type: Schema.Types.ObjectId, ref: "Image", default: null },
     parent_id: {
-      type: mongoose.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "ReffParameter",
       default: null,
     },
@@ -39,7 +28,6 @@ const ReffparamModel = Schema(
   {
     timestamps: true,
     versionKey: false,
-    new: true,
     collection: "reff_parameters",
   },
 );

@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const logActionModel = require("../app/models/logAction.model");
+const logActionModel = require("../app/models/LogAction.model");
 
 const crudServices = {};
 
@@ -130,7 +130,7 @@ crudServices.update = async (model, { id, data }) => {
   try {
     const [dataUpdate, dataOld] = await Promise.all([
       model.findByIdAndUpdate(id, data, {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
         session,
       }),
@@ -175,9 +175,9 @@ crudServices.delete = async (model, { id, data }) => {
       { _id: id, is_delete: false },
       { is_delete: true, ...data },
       {
-        new: true,
         runValidators: true,
         session,
+        returnDocument: "after",
       },
     );
 

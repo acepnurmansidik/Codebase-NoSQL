@@ -14,6 +14,7 @@ const SysUserModel = Schema(
       minlength: [3, "Panjang name minimal 3 karakter"],
       required: [true, "Name can't be empty"],
     },
+
     role_id: {
       type: mongoose.Types.ObjectId,
       ref: "ReffParameter",
@@ -25,11 +26,21 @@ const SysUserModel = Schema(
       required: [false, "Device token can't be empty"],
       default: "",
     },
+
+    // Menyimpan ringkasan status langganan saat ini untuk akses cepat
+    subscription_info: {
+      plan_id: { type: Schema.Types.ObjectId, ref: "Plan" },
+      status: {
+        type: String,
+        enum: ["active", "expired", "none"],
+        default: "none",
+      },
+      end_date: { type: Date },
+    },
   },
   {
     timestamps: true,
     versionKey: false,
-    new: true,
     collection: "users",
   },
 );

@@ -1,7 +1,7 @@
 const jwtToken = require("jsonwebtoken");
 const { jwt, server, smtpConfig } = require("../utils/config");
 const nodemailer = require("nodemailer");
-const ImageSchema = require("../app/models/image.model");
+const ImageSchema = require("../app/models/Image.model");
 const { default: mongoose } = require("mongoose");
 const path = require("path");
 const fs = require("fs");
@@ -157,43 +157,58 @@ globalService.setupLogger = (fileName, log) => {
   const filePath = path.join(loggerDir, dateFileName);
 
   try {
-    if (server.nodeEnv === "production") {
-      // Create directory if it doesn't exist
-      if (!fs.existsSync(loggerDir)) {
-        fs.mkdirSync(loggerDir, { recursive: true });
-        console.log(`Created logger directory: ${loggerDir}`);
+    if (server.nodeEnv !== "production") return; // Skip logging in non-production environments
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(loggerDir)) {
+      fs.mkdirSync(loggerDir, { recursive: true });
+      console.log(`Created logger directory: ${loggerDir}`);
 
-        // Create parent directory for dated file if needed
+      // Create parent directory for dated file if needed
+      const dateDir = path.dirname(filePath);
+      if (!fs.existsSync(dateDir)) {
+        fs.mkdirSync(dateDir, { recursive: true });
+      }
+
+      // Write initial data to file
+      fs.writeFileSync(filePath, `${log}\n`, "utf8");
+      console.log(`Created file with initial data: ${filePath}`);
+    } else {
+      // Check if file exists
+      if (fs.existsSync(filePath)) {
+        // Append data to existing file
+        fs.appendFileSync(filePath, `${log}\n`, "utf8");
+      } else {
+        // Create parent directories if needed
         const dateDir = path.dirname(filePath);
         if (!fs.existsSync(dateDir)) {
           fs.mkdirSync(dateDir, { recursive: true });
         }
 
-        // Write initial data to file
+        // Create new file
         fs.writeFileSync(filePath, `${log}\n`, "utf8");
-        console.log(`Created file with initial data: ${filePath}`);
-      } else {
-        // Check if file exists
-        if (fs.existsSync(filePath)) {
-          // Append data to existing file
-          fs.appendFileSync(filePath, `${log}\n`, "utf8");
-        } else {
-          // Create parent directories if needed
-          const dateDir = path.dirname(filePath);
-          if (!fs.existsSync(dateDir)) {
-            fs.mkdirSync(dateDir, { recursive: true });
-          }
-
-          // Create new file
-          fs.writeFileSync(filePath, `${log}\n`, "utf8");
-          console.log(`Created new file with initial data: ${filePath}`);
-        }
+        console.log(`Created new file with initial data: ${filePath}`);
       }
     }
   } catch (err) {
     console.error("Error in logger setup:", err);
     // You might want to throw the error here if this is critical setup
   }
+};
+
+/**
+ * -----------------------------------------------
+ * | SLUG
+ * -----------------------------------------------
+ * | Create slug from string
+ */
+
+globalService.createSlug = (text) => {
+  return text
+    .toString() // Memastikan input adalah string
+    .toLowerCase() // Mengubah semua huruf menjadi kecil
+    .trim() // Menghapus spasi di awal dan akhir string
+    .replace(/\s+/g, "-") // Mengganti satu atau lebih spasi dengan satu tanda "-"
+    .replace(/[^\w-]+/g, ""); // Opsional: Menghapus karakter non-alfanumerik kecuali "-" (agar URL bersih)
 };
 
 module.exports = globalService;
