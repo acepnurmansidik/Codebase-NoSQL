@@ -3,6 +3,8 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const fs = require("fs");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 
 // Swagger
 const swaggerUi = require("swagger-ui-express");
@@ -31,6 +33,32 @@ const { setupLogger } = require("./resource/helper/global-func");
 const v1 = "/api/v1";
 
 // Middleware untuk logging dengan waktu yang diperbarui
+app.use(
+  helmet({
+    // Content Security Policy (CSP) perlu disesuaikan jika menggunakan Swagger UI
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "img-src": ["'self'", "data:", "blob:"], // Mengizinkan gambar dari server sendiri dan data URI
+        "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"], // 'unsafe-inline' sering dibutuhkan Swagger
+        "style-src": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+        ],
+      },
+    },
+    // Cross-Origin Resource Policy (CORP)
+    // Penting agar file statis (gambar/uploads) bisa diakses oleh frontend yang berbeda domain
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+
+    // Menyembunyikan informasi teknologi server (X-Powered-By)
+    hidePoweredBy: true,
+
+    // Mencegah clickjacking
+    xFrameOptions: { action: "deny" },
+  }),
+);
 app.use(cors());
 app.use((req, res, next) => {
   const options = {
@@ -62,6 +90,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(mongoSanitize()); // Tambahkan middleware untuk sanitasi input
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
