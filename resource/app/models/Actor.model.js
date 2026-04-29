@@ -50,14 +50,3 @@ ActorSchema.pre("validate", function (next) {
 });
 
 module.exports = model("Actor", ActorSchema); // Sebelumnya "Genre"
-
-// Pre-save hook
-ActorSchema.pre("validate", function (next) {
-  // Jika slug tidak diisi, buat dari name
-  if (!this.slug && this.name) {
-    this.slug = globalService.createSlug(this.name); // Pastikan fungsi createSlug mengembalikan slug yang benar
-  }
-  next();
-});
-
-module.exports = model("Genre", ActorSchema);

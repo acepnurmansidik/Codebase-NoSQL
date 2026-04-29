@@ -90,7 +90,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use(mongoSanitize()); // Tambahkan middleware untuk sanitasi input
+// app.use(mongoSanitize()); // Tambahkan middleware untuk sanitasi input
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));

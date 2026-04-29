@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const globalService = require("../../helper/global-func");
 const { model, Schema } = mongoose;
 
-const GenreSchema = new Schema(
+const StudioSchema = new Schema(
   {
     slug: {
       type: String,
@@ -63,7 +63,7 @@ const GenreSchema = new Schema(
 );
 
 // Pre-save hook
-GenreSchema.pre("validate", function (next) {
+StudioSchema.pre("validate", function (next) {
   // Jika slug tidak diisi, buat dari name
   if (!this.slug && this.name) {
     this.slug = globalService.createSlug(this.name); // Pastikan fungsi createSlug mengembalikan slug yang benar
@@ -71,4 +71,4 @@ GenreSchema.pre("validate", function (next) {
   next();
 });
 
-module.exports = model("Genre", GenreSchema);
+module.exports = model("Studio", StudioSchema);
