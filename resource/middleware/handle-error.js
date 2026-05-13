@@ -49,12 +49,22 @@ const errorHandlerMiddleware = (err, req, res, next) => {
     .format(new Date())
     .replaceAll("/", "-");
 
+  if (customError.msg.includes("validation failed: ")) {
+    const fieldError = customError.msg.split("validation failed: ")[1];
+    customError.errors = fieldError.split(", ").reduce((acc, curr) => {
+      const [field, message] = curr.split(": ");
+      acc[field.trim()] = message.trim();
+      return acc;
+    }, {});
+  }
+
   setupLogger(currentDateTime.split(", ")[0], err);
   console.log(err);
 
   return res.status(StatusCodes.BAD_REQUEST).json({
     success: false,
     message: customError.msg,
+    errors: customError.errors || null,
     data: null,
   });
 };
