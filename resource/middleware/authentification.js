@@ -1,4 +1,4 @@
-const AuthUser = require("../app/models/auth");
+const AuthUser = require("../app/models/auth.model");
 const UserModel = require("../app/models/users.model");
 const globalService = require("../helper/global-func");
 const ENV = require("../utils/config");
@@ -36,7 +36,13 @@ const AuthorizeUserLogin = async (req, res, next) => {
     if (!verifyData) throw new NotFound("Data not register!");
     const userLogin = await UserModel.findOne({
       auth_id: verifyData._id,
-    }).lean();
+    })
+      .populate({
+        path: "role_id",
+        model: "Role",
+        select: "_id name path_access",
+      })
+      .lean();
 
     // impliment login user
     delete dataValid.iat;
@@ -48,6 +54,9 @@ const AuthorizeUserLogin = async (req, res, next) => {
       auth_id: verifyData._id,
       user_id: userLogin._id,
       device_token: userLogin.device_token,
+      role_id: userLogin.role_id._id,
+      role_name: userLogin.role_id.name,
+      has_access: userLogin.role_id.path_access,
     };
 
     // next to controller

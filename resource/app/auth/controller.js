@@ -105,17 +105,17 @@ controller.Login = async (req, res, next) => {
     }
 
     const populateField = [
-      { path: "role_id", model: "ReffParameter", select: "_id value" },
+      { path: "role_id", model: "Role", select: "_id name path_access" },
     ];
 
-    const users = await crudServices.findOne(UserSchema, {
-      auth_id: isAvailable.data._id,
-      selectField: "-auth_id -device_token -createdAt",
-      populateField,
-    });
+    if (!users) {
+      throw new NotFoundError("User profile data not found!");
+    }
 
-    users.data._doc.role_name = users.data.role_id.value;
-    delete users.data._doc.role_id;
+    const users = await UserSchema.findOne({ auth_id: isAvailable.data._id })
+      .select("-auth_id -device_token -created_at -updated_at")
+      .populate(populateField)
+      .lean(); // .lean() mengubah data menjadi objek literal JS biasa
 
     const token = globalService.generateJwtToken({
       email,
@@ -125,7 +125,11 @@ controller.Login = async (req, res, next) => {
     res.status(200).json({
       status: true,
       message: "Login success!",
-      data: { ...users.data._doc, token },
+      data: {
+        ...users,
+        token,
+        path_access: path_access ?? [],
+      },
     });
   } catch (err) {
     next(err);

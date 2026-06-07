@@ -28,6 +28,7 @@ const indexRouter = require("./routes");
 const notFoundMiddleware = require("./resource/middleware/not-found");
 const handleErrorMiddleware = require("./resource/middleware/handle-error");
 const { setupLogger } = require("./resource/helper/global-func");
+const { runMainSeeder } = require("./resource/seed");
 
 // Middleware untuk logging dengan waktu yang diperbarui
 app.use(
@@ -94,6 +95,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+runMainSeeder();
 // membuat variabel v1
 const v1 = "/api/v1";
 
